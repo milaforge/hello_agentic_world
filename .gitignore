@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.py[cod]
+.env
+runs/*
+!runs/.gitkeep
+workspace/*
+!workspace/.gitkeep
+MIGRATION_CHECKLIST.md
