@@ -1,0 +1,1 @@
+"""Stage 1: a bounded, evidence-backed filesystem agent."""
