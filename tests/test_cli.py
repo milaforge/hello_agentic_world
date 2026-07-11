@@ -4,7 +4,6 @@ import subprocess
 import sys
 
 from hello_agentic_world.cli import (
-    build_parser,
     main,
 )
 
