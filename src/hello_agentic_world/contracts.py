@@ -27,7 +27,7 @@ class Observation:
 
     id: str
     step: int
-    tool_call: ToolCall
+    call: ToolCall
     result: ToolResult
 
 

@@ -2,6 +2,8 @@ from pathlib import Path
 
 import pytest
 
+from hello_agentic_world.observations import ObservationStore
+
 
 @pytest.fixture
 def sample_workspace(tmp_path) -> None:
@@ -17,3 +19,7 @@ def sample_workspace(tmp_path) -> None:
 
     return workspace
 
+
+@pytest.fixture
+def sample_store() -> None:
+    return ObservationStore()

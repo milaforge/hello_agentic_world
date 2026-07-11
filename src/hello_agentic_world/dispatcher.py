@@ -35,8 +35,14 @@ import inspect
 from collections.abc import Callable
 from typing import Any
 
-from hello_agentic_world.tools import (
+from hello_agentic_world.observations import (
+    Observation,
+    ObservationStore,
+    ToolCall,
+    ToolResult,
     ToolError,
+)
+from hello_agentic_world.tools import (
     finish,
     get_file_metadata,
     list_directory,
@@ -52,37 +58,53 @@ TOOLS: dict[str, ToolFunction] = {
 
 
 def execute_tool_call(
+    store: ObservationStore,
     name: str,
     arguments: dict[str, Any],
-) -> dict[str, Any]:
-    tool = TOOLS.get(name)
+) -> Observation:
+    call = ToolCall(name=name, arguments=arguments)
+    tool = TOOLS.get(call.name)
 
     if tool is None:
-        return {
-            "ok": False,
-            "error": "unknown_tool",
-        }
+        return store.record(
+            call,
+            ToolResult(
+                ok=False,
+                error="unknown_tool",
+            ),
+        )
 
     # Catch structural mistakes before execution
     try:
-        inspect.signature(tool).bind(**arguments)
+        inspect.signature(tool).bind(**call.arguments)
     except TypeError:
-        return {
-            "ok": False,
-            "error": "invalid_arguments",
-        }
+        return store.record(
+            call,
+            ToolResult(
+                ok=False,
+                error="invalid_arguments",
+            ),
+        )
 
     try:
-        value = tool(**arguments)
+        value = tool(**call.arguments)
     except ToolError as exc:
-        return {
-            "ok": False,
-            "error": str(exc),
-        }
+        return store.record(
+            call,
+            ToolResult(
+                ok=False,
+                error=str(exc),
+            ),
+        )
     except TypeError:
-        return {
-            "ok": False,
-            "error": "invalid_argument_types",
-        }
+        return store.record(
+            call,
+            ToolResult(
+                ok=False,
+                error="invalid_argument_types",
+            ),
+        )
 
-    return {"ok": True, "value": value}
+    result = ToolResult(ok=True, value=value)
+
+    return store.record(call, result)
