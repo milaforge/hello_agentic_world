@@ -36,16 +36,16 @@ def list_directory(workspace_root: Path, path: str) -> dict[str, Any]:
     workspace_root = workspace_root.resolve()
     resolved = (workspace_root / path).resolve()
 
+    try:
+        relative_path = resolved.relative_to(workspace_root)
+    except ValueError as exc:
+        raise ToolError("path_outside_workspace") from exc
+
     if not resolved.exists():
         raise ToolError("path_does_not_exist")
 
     if not resolved.is_dir():
         raise ToolError("path_is_not_a_directory")
-
-    try:
-        relative_path = resolved.relative_to(workspace_root)
-    except ValueError as exc:
-        raise ToolError("path_outside_workspace") from exc
 
     entries = []
 
