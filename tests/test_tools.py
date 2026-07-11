@@ -9,22 +9,6 @@ from hello_agentic_world.tools import (
     list_directory,
 )
 
-
-@pytest.fixture
-def sample_workspace(tmp_path) -> None:
-    workspace = tmp_path / "workspace"
-    workspace.mkdir()
-
-    (workspace / "main.py").write_text("print('hello')\n")
-    (workspace / "notes.txt").write_text("notes")
-
-    src = workspace / "src"
-    src.mkdir()
-    (src / "app.py").write_text("x = 1\n")
-
-    return workspace
-
-
 def test_list_directory(sample_workspace: Path) -> None:
     result = list_directory(workspace_root=sample_workspace, path=".")
 
