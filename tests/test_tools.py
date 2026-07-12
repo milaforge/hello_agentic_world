@@ -12,19 +12,18 @@ from hello_agentic_world.tools import (
 def test_list_directory(sample_workspace: Path) -> None:
     result = list_directory(workspace_root=sample_workspace, path=".")
 
-    assert result["path"] == "workspace"
-    print(result)
+    assert result["path"] == "."
     assert result["entries"] == [
-        {"path": "workspace/main.py", "kind": "file"},
-        {"path": "workspace/notes.txt", "kind": "file"},
-        {"path": "workspace/src", "kind": "directory"},
+        {"path": "main.py", "kind": "file"},
+        {"path": "notes.txt", "kind": "file"},
+        {"path": "src", "kind": "directory"},
     ]
 
 
 def test_get_file_metadata(sample_workspace: Path) -> None:
     result = get_file_metadata(workspace_root=sample_workspace, path="main.py")
 
-    assert result["path"] == "workspace/main.py"
+    assert result["path"] == "main.py"
     assert result["kind"] == "file"
     assert result["size_bytes"] == len("print('hello')\n")
 

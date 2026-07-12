@@ -5,84 +5,68 @@ from typing import Any
 
 from .contracts import ToolError
 
-WORKSPACE_ROOT = Path("workspace").resolve()
 
+def resolve_workspace_path(workspace_root: Path, path: str) -> Path:
+    if not isinstance(path, str):
+        raise ToolError("invalid_argument_types")
 
-def resolve_workspace_path(path: str) -> Path:
+    workspace_root = workspace_root.resolve()
     requested = Path(path)
 
     if requested.is_absolute():
         raise ToolError("absolute_paths_are_not_allowed")
 
-    resolved = requested.resolve()
+    resolved = (workspace_root / requested).resolve()
 
     try:
-        resolved.relative_to(WORKSPACE_ROOT)
-    except Exception as exc:
-        raise ToolError("path_outside_workspace") from exc
-
-    return resolved
-
-
-def display_path(relative_path: Path) -> str:
-    return (
-        "workspace"
-        if relative_path == Path(".")
-        else str(Path("workspace") / relative_path)
-    )
-
-
-def list_directory(workspace_root: Path, path: str) -> dict[str, Any]:
-    workspace_root = workspace_root.resolve()
-    resolved = (workspace_root / path).resolve()
-
-    try:
-        relative_path = resolved.relative_to(workspace_root)
+        resolved.relative_to(workspace_root)
     except ValueError as exc:
         raise ToolError("path_outside_workspace") from exc
 
     if not resolved.exists():
         raise ToolError("path_does_not_exist")
 
+    return resolved
+
+
+def display_path(workspace_root: Path, path: Path) -> str:
+    relative = path.relative_to(workspace_root)
+
+    if relative == Path("."):
+        return "."
+
+    return relative.as_posix()
+
+
+def list_directory(workspace_root: Path, path: str) -> dict[str, Any]:
+    resolved = resolve_workspace_path(workspace_root, path)
+
     if not resolved.is_dir():
         raise ToolError("path_is_not_a_directory")
 
-    entries = []
-
-    for entry in sorted(resolved.iterdir(), key=lambda item: item.name):
-        relative_entry = entry.relative_to(workspace_root)
-
-        entries.append(
-            {
-                "path": str(Path("workspace") / relative_entry),
-                "kind": "directory" if entry.is_dir() else "file",
-            }
-        )
+    entries = [
+        {
+            "path": display_path(workspace_root, entry),
+            "kind": "directory" if entry.is_dir() else "file",
+        }
+        for entry in sorted(resolved.iterdir(), key=lambda item: item.name)
+    ]
 
     return {
-        "path": display_path(relative_path),
+        "path": display_path(workspace_root, resolved),
         "entries": entries,
     }
 
 
 def get_file_metadata(workspace_root: Path, path: str) -> dict[str, Any]:
     workspace_root = workspace_root.resolve()
-    resolved = (workspace_root / path).resolve()
-
-    # validate boundary
-    try:
-        relative_path = resolved.relative_to(workspace_root)
-    except ValueError as exc:
-        raise ToolError("path_outside_workspace") from exc
-
-    if not resolved.exists():
-        raise ToolError("path_does_not_exist")
+    resolved = resolve_workspace_path(workspace_root, path)
 
     if not resolved.is_file():
         raise ToolError("path_is_not_a_file")
 
     return {
-        "path": str(Path("workspace") / relative_path),
+        "path": display_path(workspace_root, resolved),
         "kind": "file",
         "size_bytes": resolved.stat().st_size,
     }

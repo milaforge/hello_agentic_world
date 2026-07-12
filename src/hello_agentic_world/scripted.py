@@ -4,6 +4,8 @@ Some hardcoded decision making system to help prove the loop works.
 
 from __future__ import annotations
 
+from pathlib import PurePosixPath
+
 from hello_agentic_world.agent import Action
 from hello_agentic_world.observations import Observation
 
@@ -16,7 +18,7 @@ def simple_script(
     if step == 0:
         return Action(
             "list_directory",
-            arguments={"path": "workspace"},
+            arguments={"path": "."},
         )
 
     return Action(
@@ -33,7 +35,7 @@ def simple_script(
 def never_finish(
     observations: tuple[Observation, ...],
 ) -> Action:
-    return Action(name="list_directory", arguments={"path": "workspace"})
+    return Action(name="list_directory", arguments={"path": "."})
 
 
 def unsafe_script(
@@ -41,5 +43,7 @@ def unsafe_script(
 ) -> Action:
     return Action(
         name="delete_file",
-        arguments={"path": "workspace/a.txt"},
+        arguments={"path": "a.txt"},
+    )
+
     )

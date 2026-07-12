@@ -32,6 +32,8 @@ structured result
 from __future__ import annotations
 
 import inspect
+from functools import partial
+from pathlib import Path
 from collections.abc import Callable
 from typing import Any
 
@@ -50,20 +52,23 @@ from hello_agentic_world.tools import (
 
 ToolFunction = Callable[..., dict[str, Any]]
 
-TOOLS: dict[str, ToolFunction] = {
-    "list_directory": list_directory,
-    "get_file_metadata": get_file_metadata,
-    "finish": finish,
-}
+
+def build_tools(workspace_root: Path) -> dict[str, ToolFunction]:
+    return {
+        "list_directory": partial(list_directory, workspace_root),
+        "get_file_metadata": partial(get_file_metadata, workspace_root),
+        "finish": finish,
+    }
 
 
 def execute_tool_call(
     store: ObservationStore,
+    tools: dict[str, ToolFunction],
     name: str,
     arguments: dict[str, Any],
 ) -> Observation:
     call = ToolCall(name=name, arguments=arguments)
-    tool = TOOLS.get(call.name)
+    tool = tools.get(call.name)
 
     if tool is None:
         return store.record(
@@ -86,6 +91,8 @@ def execute_tool_call(
             ),
         )
 
+    value = None
+
     try:
         value = tool(**call.arguments)
     except ToolError as exc:
@@ -96,12 +103,12 @@ def execute_tool_call(
                 error=str(exc),
             ),
         )
-    except TypeError:
+    except (TypeError, AttributeError) as exc:
         return store.record(
             call,
             ToolResult(
                 ok=False,
-                error="invalid_argument_types",
+                error=f"{type(exc).__name__}: {exc}",
             ),
         )
 

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-from hello_agentic_world.dispatcher import execute_tool_call
+from hello_agentic_world.dispatcher import execute_tool_call, build_tools
 from hello_agentic_world.observations import Observation, ObservationStore
 
 
@@ -28,18 +29,21 @@ class AgentRun:
 def run_agent(
     decide: DecisionMaker,
     *,
+    workspace_root: Path = Path("workspace"),
     max_steps: int = 15,
 ) -> AgentRun:
     """
     The Loop
     """
     store = ObservationStore()
+    tools = build_tools(workspace_root.resolve())
 
     for _ in range(max_steps):
         action = decide(store.all())
 
         observation = execute_tool_call(
             store,
+            tools,
             action.name,
             action.arguments,
         )
