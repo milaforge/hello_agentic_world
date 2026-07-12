@@ -1,13 +1,9 @@
-from pathlib import Path
 
 from hello_agentic_world.agent import run_agent
-from hello_agentic_world.observations import ObservationStore
-from hello_agentic_world.scripted import simple_script, never_finish, unsafe_script
+from hello_agentic_world.scripted import simple_script, never_finish, unsafe_script, filesystem_script
 
 
-def test_agent_executes_until_finish(
-    sample_workspace: Path, sample_store: ObservationStore
-) -> None:
+def test_agent_executes_until_finish() -> None:
     result = run_agent(simple_script)
 
     assert result.completed is True
@@ -35,3 +31,14 @@ def test_invalid_actions_consume_budget() -> None:
     for obs in result.observations:
         assert obs.result.ok is False
         assert obs.result.error == "unknown_tool"
+
+def test_script_counts_python_files() -> None:
+    result = run_agent(
+        filesystem_script,
+        max_steps=15,
+    )
+
+    assert result.completed is True
+    assert result.final_value is not None
+    assert result.final_value["python_file_count"] == 3
+    assert result.final_value["total_size_bytes"] == 37
