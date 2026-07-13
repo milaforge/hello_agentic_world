@@ -12,6 +12,8 @@ from hello_agentic_world.contracts import (
 
 
 class ObservationStore:
+    """Append-only trace of what the host accepted or rejected."""
+
     def __init__(self) -> None:
         self._observations: list[Observation] = []
 
@@ -33,8 +35,7 @@ class ObservationStore:
         return observation
 
     def all(self) -> tuple[Observation, ...]:
-        # to make it immutable and prevent:
-        # store.all().append(...)
+        # Give callers a snapshot they cannot mutate in place.
         return tuple(self._observations)
 
     def get(self, observation_id: str) -> Observation | None:

@@ -54,6 +54,8 @@ ToolFunction = Callable[..., dict[str, Any]]
 
 
 def build_tools(workspace_root: Path) -> dict[str, ToolFunction]:
+    """Expose only the tools this run is allowed to use."""
+
     return {
         "list_directory": partial(list_directory, workspace_root),
         "get_file_metadata": partial(get_file_metadata, workspace_root),
@@ -67,6 +69,8 @@ def execute_tool_call(
     name: str,
     arguments: dict[str, Any],
 ) -> Observation:
+    """Validate, execute, and record one untrusted tool request."""
+
     call = ToolCall(name=name, arguments=arguments)
     tool = tools.get(call.name)
 
@@ -79,7 +83,7 @@ def execute_tool_call(
             ),
         )
 
-    # Catch structural mistakes before execution
+    # Reject malformed calls before any tool code runs.
     try:
         inspect.signature(tool).bind(**call.arguments)
     except TypeError:
@@ -90,8 +94,6 @@ def execute_tool_call(
                 error="invalid_arguments",
             ),
         )
-
-    value = None
 
     try:
         value = tool(**call.arguments)

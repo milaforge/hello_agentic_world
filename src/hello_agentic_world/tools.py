@@ -7,6 +7,8 @@ from .contracts import ToolError
 
 
 def resolve_workspace_path(workspace_root: Path, path: str) -> Path:
+    """Resolve user-supplied paths without escaping the workspace."""
+
     if not isinstance(path, str):
         raise ToolError("invalid_argument_types")
 
@@ -30,6 +32,8 @@ def resolve_workspace_path(workspace_root: Path, path: str) -> Path:
 
 
 def display_path(workspace_root: Path, path: Path) -> str:
+    """Return stable POSIX-style paths for observations and tests."""
+
     relative = path.relative_to(workspace_root)
 
     if relative == Path("."):
@@ -39,6 +43,8 @@ def display_path(workspace_root: Path, path: Path) -> str:
 
 
 def list_directory(workspace_root: Path, path: str) -> dict[str, Any]:
+    """Describe immediate children without exposing host-only paths."""
+
     resolved = resolve_workspace_path(workspace_root, path)
 
     if not resolved.is_dir():
@@ -59,6 +65,8 @@ def list_directory(workspace_root: Path, path: str) -> dict[str, Any]:
 
 
 def get_file_metadata(workspace_root: Path, path: str) -> dict[str, Any]:
+    """Return the small metadata set needed by the learning exercise."""
+
     workspace_root = workspace_root.resolve()
     resolved = resolve_workspace_path(workspace_root, path)
 
@@ -78,6 +86,8 @@ def finish(
     total_size_bytes: int,
     evidence: list[str],
 ) -> dict[str, Any]:
+    """Accept the agent's final answer after basic sanity checks."""
+
     if python_file_count < 0:
         raise ToolError("invalid_file_count")
 

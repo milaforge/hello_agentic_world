@@ -11,6 +11,8 @@ from hello_agentic_world.observations import Observation, ObservationStore
 
 @dataclass(frozen=True)
 class Action:
+    """The model's next requested host action."""
+
     name: str
     arguments: dict[str, Any]
 
@@ -20,6 +22,8 @@ DecisionMaker = Callable[[tuple[Observation, ...]], Action]
 
 @dataclass(frozen=True)
 class AgentRun:
+    """Complete trace and terminal state for one bounded loop."""
+
     completed: bool
     observations: tuple[Observation, ...]
     final_value: dict[str, Any] | None = None
@@ -32,9 +36,8 @@ def run_agent(
     workspace_root: Path = Path("workspace"),
     max_steps: int = 15,
 ) -> AgentRun:
-    """
-    The Loop
-    """
+    """Run model decisions through host-controlled tools until completion."""
+
     store = ObservationStore()
     tools = build_tools(workspace_root.resolve())
 

@@ -1,6 +1,4 @@
-"""
-Some hardcoded decision making system to help prove the loop works.
-"""
+"""Deterministic decision makers used by tests and early stages."""
 
 from __future__ import annotations
 
@@ -13,6 +11,8 @@ from hello_agentic_world.observations import Observation
 def simple_script(
     observations: tuple[Observation, ...],
 ) -> Action:
+    """Finish after proving one tool call can round-trip."""
+
     step = len(observations)
 
     if step == 0:
@@ -35,12 +35,16 @@ def simple_script(
 def never_finish(
     observations: tuple[Observation, ...],
 ) -> Action:
+    """Exercise the agent's step budget failure path."""
+
     return Action(name="list_directory", arguments={"path": "."})
 
 
 def unsafe_script(
     observations: tuple[Observation, ...],
 ) -> Action:
+    """Exercise rejection of tools outside the allowlist."""
+
     return Action(
         name="delete_file",
         arguments={"path": "a.txt"},
@@ -50,6 +54,8 @@ def unsafe_script(
 def filesystem_script(
     observations: tuple[Observation, ...],
 ) -> Action:
+    """Explore the workspace, measure Python files, then finish with evidence."""
+
     listed_directories: set[str] = set()
     measured_files: set[str] = set()
     discovered_directories: list[str] = ["."]
@@ -67,6 +73,7 @@ def filesystem_script(
                 path = entry["path"]
 
                 if entry["kind"] == "directory":
+                    # Keep the demo bounded when run from a local checkout.
                     if PurePosixPath(path).name != ".venv":
                         discovered_directories.append(path)
 
