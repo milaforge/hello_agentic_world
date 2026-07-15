@@ -29,6 +29,8 @@ Rules:
 - Do not include the leading "{workspace_name}/" prefix in tool path arguments.
 - Do not inspect .venv directories.
 - Do not invent files, sizes or observations.
+- Treat the host task state as verified fact.
+- Use the latest host observation only to update your next action.
 - Call finish only when every relevant directory and Python file has been inspected.
 - Evidence must contain observation IDs supporting the answer.
 """
