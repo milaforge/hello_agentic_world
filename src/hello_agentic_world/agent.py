@@ -17,7 +17,9 @@ class Action:
     arguments: dict[str, Any]
 
 
-DecisionMaker = Callable[[tuple[Observation, ...]], Action]
+ActionBatch = tuple[Action, ...]
+Decision = Action | ActionBatch
+DecisionMaker = Callable[[tuple[Observation, ...]], Decision]
 
 
 @dataclass(frozen=True)
@@ -41,22 +43,36 @@ def run_agent(
     store = ObservationStore()
     tools = build_tools(workspace_root.resolve())
 
-    for _ in range(max_steps):
-        action = decide(store.all())
+    while len(store.all()) < max_steps:
+        actions = _as_action_batch(decide(store.all()))
 
-        observation = execute_tool_call(
-            store,
-            tools,
-            action.name,
-            action.arguments,
-        )
+        for action in actions:
+            if len(store.all()) >= max_steps:
+                break
 
-        if action.name == "finish" and observation.result.ok:
-            return AgentRun(
-                completed=True,
-                observations=store.all(),
-                final_value=observation.result.value,
+            observation = execute_tool_call(
+                store,
+                tools,
+                action.name,
+                action.arguments,
             )
+
+            if action.name == "finish" and observation.result.ok:
+                return AgentRun(
+                    completed=True,
+                    observations=store.all(),
+                    final_value=observation.result.value,
+                )
     return AgentRun(
         completed=False, observations=store.all(), error="step_budget_exhausted"
     )
+
+
+def _as_action_batch(decision: Decision) -> ActionBatch:
+    if isinstance(decision, Action):
+        return (decision,)
+
+    if decision:
+        return decision
+
+    return (Action(name="invalid_model_response", arguments={}),)

@@ -5,9 +5,10 @@ from typing import Any
 
 from ollama import chat, ResponseError
 
-from hello_agentic_world.agent import Action
+from hello_agentic_world.agent import Action, ActionBatch
 from hello_agentic_world.debug import print_model_input, print_model_output
 from hello_agentic_world.observations import Observation
+from hello_agentic_world.task_state import task_state_message
 
 
 class ModelError(Exception):
@@ -22,6 +23,9 @@ Count all Python files under {workspace_name}/, excluding every .venv directory,
 
 Rules:
 - Use only the provided tools.
+- You may call multiple independent tools in one turn when their inputs do not
+  depend on each other's observations.
+- The host records batched tool observations in the same order you request them.
 - Inspect directories one level at a time.
 - Never access paths outside {workspace_name}/.
 - Tool paths are relative to {workspace_name}/.
@@ -99,10 +103,10 @@ def build_tool_schemas(workspace_name: str) -> list[dict[str, Any]]:
                             "type": "string",
                         },
                         "python_file_count": {
-                            "type": "string",
+                            "type": "integer",
                         },
                         "total_size_bytes": {
-                            "type": "string",
+                            "type": "integer",
                         },
                         "evidence": {"type": "array", "items": {"type": "string"}},
                     },
@@ -119,26 +123,20 @@ def ollama_decide(
     workspace_name: str,
     model: str = "qwen3:8b",
     debug: bool = False,
-) -> Action:
+) -> Action | ActionBatch:
     tool_schemas = build_tool_schemas(workspace_name)
-    messages: list[dict[str, str]] = [
-        {
-            "role": "system",
-            "content": SYSTEM_PROMPT_TEMPLATE.format(workspace_name=workspace_name),
-        },
-        {
-            "role": "user",
-            "content": request,
-        },
-    ]
-
-    messages.extend(observation_messages(obs) for obs in observations)
+    messages = build_model_messages(
+        observations,
+        request=request,
+        workspace_name=workspace_name,
+    )
 
     if debug:
         print_model_input(
             model=model,
-            messages=messages[-1:] if observations else messages,
+            messages=messages,
             tool_schemas=tool_schemas,
+            stream=False,
         )
 
     try:
@@ -155,24 +153,59 @@ def ollama_decide(
 
     tool_calls = response.message.tool_calls or []
 
-    if len(tool_calls) != 1:
+    if not tool_calls:
         if debug:
             print_model_output({"tool_call_count": len(tool_calls), "action": None})
         return Action(name="invalid_model_response", arguments={})
 
-    call = tool_calls[0].function
-
-    action = Action(name=call.name, arguments=dict(call.arguments))
+    actions = tuple(
+        Action(
+            name=tool_call.function.name,
+            arguments=dict(tool_call.function.arguments),
+        )
+        for tool_call in tool_calls
+    )
 
     if debug:
         print_model_output(
-            {"action": {"name": action.name, "arguments": action.arguments}}
+            {
+                "actions": [
+                    {"name": action.name, "arguments": action.arguments}
+                    for action in actions
+                ]
+            }
         )
 
-    return action
+    return actions
 
 
-##TODO make it more precise
+def build_model_messages(
+    observations: tuple[Observation, ...],
+    *,
+    request: str,
+    workspace_name: str,
+) -> list[dict[str, str]]:
+    """Build the bounded model payload from full host-owned observations."""
+
+    messages: list[dict[str, str]] = [
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT_TEMPLATE.format(workspace_name=workspace_name),
+        },
+        {
+            "role": "user",
+            "content": request,
+        },
+    ]
+
+    if not observations:
+        return messages
+
+    messages.append(task_state_message(observations))
+    messages.append(observation_messages(observations[-1]))
+    return messages
+
+
 def observation_messages(observation: Observation) -> dict[str, str]:
     payload = {
         "observation_id": observation.id,

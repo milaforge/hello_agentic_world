@@ -10,6 +10,7 @@ def print_model_input(
     model: str,
     messages: list[dict[str, str]],
     tool_schemas: list[dict[str, Any]],
+    stream: bool,
 ) -> None:
     print(
         "DEBUG model_input "
@@ -17,9 +18,8 @@ def print_model_input(
             {
                 "model": model,
                 "messages": messages,
-                "tool_names": [
-                    schema["function"]["name"] for schema in tool_schemas
-                ],
+                "tools": tool_schemas,
+                "stream": stream,
             },
             sort_keys=True,
             ensure_ascii=False,
