@@ -30,6 +30,24 @@ def test_execute_known_tools(
     }
 
 
+def test_execute_rejects_workspace_prefixed_path(
+    sample_workspace: Path, sample_store: ObservationStore
+) -> None:
+    tools = build_tools(sample_workspace)
+
+    observation = execute_tool_call(
+        sample_store,
+        tools,
+        "list_directory",
+        {
+            "path": "workspace/",
+        },
+    )
+
+    assert observation.result.ok is False
+    assert observation.result.error == "path_does_not_exist"
+
+
 def test_rejects_unknown_tool(
     sample_workspace: Path, sample_store: ObservationStore
 ) -> None:

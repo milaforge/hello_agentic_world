@@ -41,6 +41,14 @@ def test_reject_paths_outside_workspace(sample_workspace: Path, path: str) -> No
         list_directory(sample_workspace, path)
 
 
+@pytest.mark.parametrize("path", ["workspace", "workspace/"])
+def test_rejects_workspace_prefix_as_nested_path(
+    sample_workspace: Path, path: str
+) -> None:
+    with pytest.raises(ToolError, match="path_does_not_exist"):
+        list_directory(sample_workspace, path)
+
+
 def test_list_directory_rejects_files(sample_workspace: Path) -> None:
     with pytest.raises(ToolError, match="path_is_not_a_directory"):
         list_directory(sample_workspace, "main.py")
