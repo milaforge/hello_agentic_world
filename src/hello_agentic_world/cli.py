@@ -10,6 +10,7 @@ from pathlib import Path
 from .model import ollama_decide
 from .model import ModelError
 from .agent import run_agent
+from .traces import save_run
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -60,6 +61,12 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     try:
         result = run_agent(decide, workspace_root=workspace_root, max_steps=15)
+        run_path = save_run(
+            result, request=args.request, model=args.model, output_dir=Path("runs")
+        )
+
+        if args.debug:
+            print(f"DEBUG run_saved {run_path}")
     except ModelError as exc:
         print(str(exc))
         return 1

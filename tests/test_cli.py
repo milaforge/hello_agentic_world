@@ -46,7 +46,47 @@ def test_debug_flag_is_passed_to_model_adapter(capsys, monkeypatch) -> None:
     captured = capsys.readouterr()
 
     assert exit_code == 0
-    assert captured.out == "Request: How many Python files exist?\nstep_budget_exhausted\n"
+    assert captured.out.startswith(
+        "Request: How many Python files exist?\n"
+        "DEBUG run_saved runs/"
+    )
+    assert captured.out.endswith("step_budget_exhausted\n")
+    assert captured.err == ""
+
+
+def test_model_flag_is_passed_to_model_adapter_and_trace(
+    capsys, monkeypatch
+) -> None:
+    def fake_ollama_decide(observations, *, request, workspace_name, model, debug):
+        raise AssertionError("run_agent should not call decide in this test")
+
+    def fake_run_agent(decide, *, workspace_root, max_steps):
+        assert decide.keywords["model"] == "llama3.2:latest"
+        return AgentRun(completed=True, observations=(), final_value={"answer": "3"})
+
+    def fake_save_run(result, *, request, model, output_dir):
+        assert request == "How many Python files exist?"
+        assert model == "llama3.2:latest"
+        return output_dir / "fake-run.json"
+
+    monkeypatch.setattr("hello_agentic_world.cli.ollama_decide", fake_ollama_decide)
+    monkeypatch.setattr("hello_agentic_world.cli.run_agent", fake_run_agent)
+    monkeypatch.setattr("hello_agentic_world.cli.save_run", fake_save_run)
+
+    exit_code = main(
+        [
+            "--workspace",
+            "workspace",
+            "--model",
+            "llama3.2:latest",
+            "How many Python files exist?",
+        ]
+    )
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert captured.out == "Request: How many Python files exist?\n{'answer': '3'}\n"
     assert captured.err == ""
 
 
