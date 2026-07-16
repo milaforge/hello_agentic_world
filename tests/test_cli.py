@@ -25,12 +25,13 @@ def test_main_prints_request_and_result(capsys, monkeypatch) -> None:
 
 
 def test_debug_flag_is_passed_to_model_adapter(capsys, monkeypatch) -> None:
-    def fake_ollama_decide(observations, *, request, workspace_name, debug):
+    def fake_ollama_decide(observations, *, request, workspace_name, model, debug):
         raise AssertionError("run_agent should not call decide in this test")
 
     def fake_run_agent(decide, *, workspace_root, max_steps):
         assert workspace_root.as_posix() == "workspace"
         assert decide.keywords["debug"] is True
+        assert decide.keywords["model"] == "qwen3:8b"
         assert decide.keywords["request"] == "How many Python files exist?"
         assert decide.keywords["workspace_name"] == "workspace"
         return AgentRun(completed=False, observations=(), error="step_budget_exhausted")

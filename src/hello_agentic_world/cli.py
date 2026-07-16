@@ -31,6 +31,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Print model input and output payloads to stderr.",
     )
+    parser.add_argument(
+        "--model",
+        default="qwen3:8b",
+        help="Ollama model to use for decisions.",
+    )
 
     return parser
 
@@ -49,6 +54,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         ollama_decide,
         request=args.request,
         workspace_name=workspace_name,
+        model=args.model,
         debug=args.debug,
     )
 
