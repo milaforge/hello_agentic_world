@@ -44,13 +44,13 @@ def test_agent_executes_batched_actions_in_one_decision() -> None:
                     {
                         "answer": "done",
                         "python_file_count": 1,
-                        "total_size_bytes": 37,
-                        "evidence": ["obs-1", "obs-2"],
+                        "total_size_bytes": 15,
+                        "evidence": ["obs-2"],
                     },
                 ),
             )
 
-        raise AssertionError("batched actions should finish in the first decision")
+        raise AssertionError("this test batch should finish in the first decision")
 
     result = run_agent(batched_script)
 
@@ -74,8 +74,8 @@ def test_batched_observations_preserve_request_order() -> None:
             "finish",
             {
                 "answer": "done",
-                "python_file_count": 1,
-                "total_size_bytes": 37,
+                "python_file_count": 2,
+                "total_size_bytes": 20,
                 "evidence": ["obs-1", "obs-2"],
             },
         )
