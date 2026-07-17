@@ -1,4 +1,6 @@
 
+from pathlib import Path
+
 from hello_agentic_world.agent import Action, run_agent
 from hello_agentic_world.scripted import simple_script, never_finish, unsafe_script, filesystem_script
 
@@ -62,7 +64,7 @@ def test_agent_executes_batched_actions_in_one_decision() -> None:
     ]
 
 
-def test_batched_observations_preserve_request_order() -> None:
+def test_batched_observations_preserve_request_order(sample_workspace: Path) -> None:
     def batched_script(observations):
         if not observations:
             return (
@@ -80,7 +82,7 @@ def test_batched_observations_preserve_request_order() -> None:
             },
         )
 
-    result = run_agent(batched_script)
+    result = run_agent(batched_script, workspace_root=sample_workspace)
 
     assert result.completed is True
     assert [
@@ -118,9 +120,20 @@ def test_empty_action_batches_consume_budget() -> None:
     assert result.observations[0].call.name == "invalid_model_response"
 
 
-def test_script_counts_python_files() -> None:
+def test_script_counts_python_files(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    (workspace / "main.py").write_text("print('hello')\n")
+    (workspace / "notes.txt").write_text("notes")
+
+    src = workspace / "src"
+    src.mkdir()
+    (src / "app.py").write_text("x = 1\n")
+    (src / "tools.py").write_text("from x import y\n")
+
     result = run_agent(
         filesystem_script,
+        workspace_root=workspace,
         max_steps=15,
     )
 
