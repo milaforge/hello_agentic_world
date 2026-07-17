@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
-from .contracts import ToolError
+from .contracts import (
+    DirectoryListingPayload,
+    FileMetadataPayload,
+    FinishPayload,
+    ToolError,
+)
 
 
 def resolve_workspace_path(workspace_root: Path, path: str) -> Path:
@@ -42,7 +46,7 @@ def display_path(workspace_root: Path, path: Path) -> str:
     return relative.as_posix()
 
 
-def list_directory(workspace_root: Path, path: str) -> dict[str, Any]:
+def list_directory(workspace_root: Path, path: str) -> DirectoryListingPayload:
     """Describe immediate children without exposing host-only paths."""
 
     resolved = resolve_workspace_path(workspace_root, path)
@@ -64,7 +68,7 @@ def list_directory(workspace_root: Path, path: str) -> dict[str, Any]:
     }
 
 
-def get_file_metadata(workspace_root: Path, path: str) -> dict[str, Any]:
+def get_file_metadata(workspace_root: Path, path: str) -> FileMetadataPayload:
     """Return the small metadata set needed by the learning exercise."""
 
     workspace_root = workspace_root.resolve()
@@ -85,7 +89,7 @@ def finish(
     python_file_count: int,
     total_size_bytes: int,
     evidence: list[str],
-) -> dict[str, Any]:
+) -> FinishPayload:
     """Accept the agent's final answer after basic sanity checks."""
 
     if python_file_count < 0:

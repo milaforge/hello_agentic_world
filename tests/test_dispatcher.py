@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from hello_agentic_world.dispatcher import (
+    build_tool_schema_names,
     execute_tool_call,
     ObservationStore,
     build_tools,
@@ -28,6 +29,13 @@ def test_execute_known_tools(
         "path": "main.py",
         "kind": "file",
     }
+
+
+def test_tool_registry_and_schemas_share_names(sample_workspace: Path) -> None:
+    tools = build_tools(sample_workspace)
+    schema_names = build_tool_schema_names(sample_workspace, "workspace")
+
+    assert schema_names == list(tools.keys())
 
 
 def test_execute_rejects_workspace_prefixed_path(

@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any
 
 from ollama import chat, ResponseError
 
 from hello_agentic_world.agent import Action, ActionBatch
 from hello_agentic_world.debug import print_model_input, print_model_output
+from hello_agentic_world.dispatcher import build_tool_schemas
 from hello_agentic_world.observations import Observation
 from hello_agentic_world.task_state import task_state_message
 
@@ -40,82 +42,6 @@ Rules:
 """
 
 
-def build_tool_schemas(workspace_name: str) -> list[dict[str, Any]]:
-    return [
-        {
-            "type": "function",
-            "function": {
-                "name": "list_directory",
-                "description": (
-                    "List the immediate entries of a directory. Paths are relative "
-                    f'to {workspace_name}/; use "." for the root.'
-                ),
-                "parameters": {
-                    "type": "object",
-                    "required": ["path"],
-                    "properties": {
-                        "path": {
-                            "type": "string",
-                            "description": (
-                                f"A relative path under {workspace_name}/, without "
-                                f'the leading "{workspace_name}/" prefix.'
-                            ),
-                        }
-                    },
-                },
-            },
-        },
-        {
-            "type": "function",
-            "function": {
-                "name": "get_file_metadata",
-                "description": "Return metadata including byte size for one file.",
-                "parameters": {
-                    "type": "object",
-                    "required": ["path"],
-                    "properties": {
-                        "path": {
-                            "type": "string",
-                            "description": (
-                                f"A relative file path under {workspace_name}/, without "
-                                f'the leading "{workspace_name}/" prefix.'
-                            ),
-                        }
-                    },
-                },
-            },
-        },
-        {
-            "type": "function",
-            "function": {
-                "name": "finish",
-                "description": "Submit the final answer with supporting evidence.",
-                "parameters": {
-                    "type": "object",
-                    "required": [
-                        "answer",
-                        "python_file_count",
-                        "total_size_bytes",
-                        "evidence",
-                    ],
-                    "properties": {
-                        "answer": {
-                            "type": "string",
-                        },
-                        "python_file_count": {
-                            "type": "integer",
-                        },
-                        "total_size_bytes": {
-                            "type": "integer",
-                        },
-                        "evidence": {"type": "array", "items": {"type": "string"}},
-                    },
-                },
-            },
-        },
-    ]
-
-
 def ollama_decide(
     observations: tuple[Observation, ...],
     *,
@@ -124,7 +50,7 @@ def ollama_decide(
     model: str = "qwen3:8b",
     debug: bool = False,
 ) -> Action | ActionBatch:
-    tool_schemas = build_tool_schemas(workspace_name)
+    tool_schemas = build_tool_schemas(Path(workspace_name), workspace_name)
     messages = build_model_messages(
         observations,
         request=request,

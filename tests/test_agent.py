@@ -2,6 +2,7 @@
 from pathlib import Path
 
 from hello_agentic_world.agent import Action, run_agent
+from hello_agentic_world.observations import ObservationStore
 from hello_agentic_world.scripted import simple_script, never_finish, unsafe_script, filesystem_script
 
 
@@ -106,6 +107,49 @@ def test_batched_actions_stop_at_step_budget() -> None:
     assert result.completed is False
     assert result.error == "step_budget_exhausted"
     assert len(result.observations) == 1
+
+
+def test_invalid_finish_reports_verification_error() -> None:
+    def invalid_finish(observations):
+        return Action(
+            "finish",
+            {
+                "answer": "done",
+                "python_file_count": 10,
+                "total_size_bytes": 0,
+                "evidence": ["obs-999"],
+            },
+        )
+
+    result = run_agent(invalid_finish, max_steps=3)
+
+    assert result.completed is False
+    assert result.error == "verification_failed:unknown_evidence:obs-999"
+    assert len(result.observations) == 1
+
+
+def test_agent_accepts_injected_runtime_dependencies() -> None:
+    store = ObservationStore()
+
+    def custom_finish(answer: str) -> dict[str, object]:
+        return {"answer": answer}
+
+    def finish_verifier(observations):
+        return True, None
+
+    def script(observations):
+        return Action("finish", {"answer": "done"})
+
+    result = run_agent(
+        script,
+        store=store,
+        tools={"finish": custom_finish},
+        finish_verifier=finish_verifier,
+    )
+
+    assert result.completed is True
+    assert result.observations == store.all()
+    assert result.final_value == {"answer": "done"}
 
 
 def test_empty_action_batches_consume_budget() -> None:

@@ -76,3 +76,15 @@ def test_rejects_fake_evidence():
 
     assert ok is False
     assert "unknown_evidence" in error
+
+
+def test_rejects_fake_size_with_clear_diagnostic():
+    ok, error = verify_finish(
+        make_observations(),
+        python_file_count=2,
+        total_size_bytes=999,
+        evidence=["obs-1", "obs-2"],
+    )
+
+    assert ok is False
+    assert error == "size_mismatch:expected=30,got=999"

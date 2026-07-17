@@ -51,6 +51,6 @@ def verify_finish(
         )
 
     if actual_size != total_size_bytes:
-        return (False, f"size_mismatch:expected={total_size_bytes},got={actual_size}")
+        return (False, f"size_mismatch:expected={actual_size},got={total_size_bytes}")
 
     return True, None

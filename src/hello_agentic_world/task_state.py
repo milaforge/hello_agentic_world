@@ -5,6 +5,10 @@ from dataclasses import dataclass, field
 from pathlib import PurePosixPath
 from typing import Any
 
+from hello_agentic_world.contracts import (
+    PythonFileMeasurement,
+    TaskStatePayload,
+)
 from hello_agentic_world.observations import Observation
 
 
@@ -16,7 +20,9 @@ class TaskState:
     pending_directories: set[str] = field(default_factory=lambda: {"."})
     ignored_directories: set[str] = field(default_factory=set)
     pending_python_files: set[str] = field(default_factory=set)
-    measured_python_files: dict[str, dict[str, Any]] = field(default_factory=dict)
+    measured_python_files: dict[str, PythonFileMeasurement] = field(
+        default_factory=dict
+    )
     failed_observations: list[dict[str, Any]] = field(default_factory=list)
 
     @property
@@ -36,7 +42,7 @@ class TaskState:
             for _, metadata in sorted(self.measured_python_files.items())
         ]
 
-    def as_payload(self) -> dict[str, Any]:
+    def as_payload(self) -> TaskStatePayload:
         return {
             "listed_directories": sorted(self.listed_directories),
             "pending_directories": sorted(self.pending_directories),

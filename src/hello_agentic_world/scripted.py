@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from pathlib import PurePosixPath
-
 from hello_agentic_world.agent import Action
 from hello_agentic_world.observations import Observation
+from hello_agentic_world.task_state import build_task_state
 
 
 def simple_script(
@@ -56,79 +55,30 @@ def filesystem_script(
 ) -> Action:
     """Explore the workspace, measure Python files, then finish with evidence."""
 
-    listed_directories: set[str] = set()
-    measured_files: set[str] = set()
-    discovered_directories: list[str] = ["."]
-    discovered_python_files: list[str] = []
+    state = build_task_state(observations)
 
-    for observation in observations:
-        if not observation.result.ok or observation.result.value is None:
-            continue
+    if state.pending_directories:
+        return Action(
+            name="list_directory",
+            arguments={"path": sorted(state.pending_directories)[0]},
+        )
 
-        if observation.call.name == "list_directory":
-            listed_path = observation.result.value["path"]
-            listed_directories.add(listed_path)
-
-            for entry in observation.result.value["entries"]:
-                path = entry["path"]
-
-                if entry["kind"] == "directory":
-                    # Keep the demo bounded when run from a local checkout.
-                    if PurePosixPath(path).name != ".venv":
-                        discovered_directories.append(path)
-
-                elif path.endswith(".py"):
-                    discovered_python_files.append(path)
-
-        elif observation.call.name == "get_file_metadata":
-            measured_files.add(observation.result.value["path"])
-
-    for directory in discovered_directories:
-        if directory not in listed_directories:
-            return Action(
-                name="list_directory",
-                arguments={"path": directory},
-            )
-
-    for path in discovered_python_files:
-        if path not in measured_files:
-            return Action(
-                name="get_file_metadata",
-                arguments={"path": path},
-            )
-
-    metadata_observations = [
-        observation
-        for observation in observations
-        if observation.call.name == "get_file_metadata"
-        and observation.result.ok
-        and observation.result.value is not None
-    ]
-
-    count = len(metadata_observations)
-    total_size = sum(
-        observation.result.value["size_bytes"] for observation in metadata_observations
-    )
-
-    evidence = [
-        observation.id
-        for observation in observations
-        if observation.result.ok
-        and observation.call.name
-        in {
-            "list_directory",
-            "get_file_metadata",
-        }
-    ]
+    if state.pending_python_files:
+        return Action(
+            name="get_file_metadata",
+            arguments={"path": sorted(state.pending_python_files)[0]},
+        )
 
     return Action(
         name="finish",
         arguments={
             "answer": (
-                f"Found {count} Python files with a total size of {total_size} bytes."
+                "Found "
+                f"{state.python_file_count} Python files with a total size of "
+                f"{state.total_size_bytes} bytes."
             ),
-            "python_file_count": count,
-            "total_size_bytes": total_size,
-            "evidence": evidence,
+            "python_file_count": state.python_file_count,
+            "total_size_bytes": state.total_size_bytes,
+            "evidence": state.evidence,
         },
     )
