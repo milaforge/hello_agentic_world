@@ -99,3 +99,12 @@ See:
 No agent framework, multi-agent role play, open shell, browser control, production credentials, or autonomous network access. Those increase surface area before the core loop is understood.
 
 The outcome is not “an LLM that calls tools.” It is an agent whose actions, evidence, permissions, and failure modes can be inspected and evaluated.
+
+
+## Repository history
+
+`main` contains one squashed milestone commit per completed stage.
+
+The complete implementation history, including intermediate decisions, failures, and refactors, remains available in each `stage/*` branch.
+
+The mdBook documentation reconstructs every stage from its branch history and links directly to the relevant commit diffs.

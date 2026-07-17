@@ -38,3 +38,48 @@ The application workflow must not directly call recursive globbing or compute th
 - zero execution outside `workspace/`;
 - successful termination in all deterministic fixtures;
 - required repeated-run pass rate.
+
+---
+
+# Core idea
+
+Suppose the model returns:
+
+```json
+{
+  "tool": "get_file_metadata",
+  "arguments": {
+    "path": "workspace/main.py"
+  }
+}
+```
+
+This does not prove that:
+
+- the file exists;
+- the path is authorized;
+- the file is Python;
+- its size is known;
+- the tool was successfully executed.
+
+It is only a proposed action.
+
+Only after the host validates and executes it do we have an observation:
+
+```json
+{
+  "id": "obs-0003",
+  "tool": "get_file_metadata",
+  "result": {
+    "path": "workspace/main.py",
+    "kind": "file",
+    "size_bytes": 418
+  }
+}
+```
+
+Stage 1 is fundamentally about preserving this distinction:
+
+`model proposal ≠ environmental fact`
+
+The host application—not the model—owns validation, execution, budgets, and records.
