@@ -94,6 +94,23 @@ See:
 - [`docs/BRANCH_WORKFLOW.md`](docs/BRANCH_WORKFLOW.md)
 - [`docs/EVALUATION.md`](docs/EVALUATION.md)
 
+## Documentation
+
+The mdBook in [`docs/`](docs/) teaches the project from the branch history: `main` keeps clean squashed milestones, tags mark stable snapshots, and `stage/*` plus `refactor/*` branches preserve the detailed implementation commits.
+
+Run it locally:
+
+```bash
+cargo install mdbook
+mdbook serve docs
+```
+
+If `http://localhost:3000/` is blank or the port is already occupied, bind explicitly to IPv4 on another port:
+
+```bash
+mdbook serve docs --hostname 127.0.0.1 --port 3001 --open
+```
+
 ## What this work is not
 
 No agent framework, multi-agent role play, open shell, browser control, production credentials, or autonomous network access. Those increase surface area before the core loop is understood.

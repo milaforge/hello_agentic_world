@@ -1,0 +1,18 @@
+# Summary
+
+- [Introduction](introduction.md)
+- [Repository History](repository-history.md)
+- [Stage 1: Hello Agent](stage-1/overview.md)
+  - [Framing the Lesson](stage-1/framing.md)
+  - [CLI Foundation](stage-1/cli-foundation.md)
+  - [Safe Filesystem Tools](stage-1/filesystem-tools.md)
+  - [Dispatcher and Observations](stage-1/dispatcher-observations.md)
+  - [Agent Loop and Scripted Strategy](stage-1/agent-loop.md)
+  - [Model Integration](stage-1/model-integration.md)
+  - [Finish Verification and Traces](stage-1/verification-traces.md)
+  - [Evaluation Loop](stage-1/evaluation.md)
+  - [Stage 1.5 Refactor](stage-1/refactor-v1-5.md)
+- [Stage 2: File Detective](stage-2/overview.md)
+- [Stage 3: Self-Correcting Agent](stage-3/overview.md)
+- [Stage 4: Persistent Agent](stage-4/overview.md)
+- [Stage 5: Governed Agent](stage-5/overview.md)

@@ -1,0 +1,10 @@
+[book]
+title = "Hello, Agentic World"
+authors = ["Hello Agentic World contributors"]
+language = "en"
+multilingual = false
+src = "src"
+
+[output.html]
+git-repository-url = "https://github.com/milaforge/hello_agentic_world"
+edit-url-template = "https://github.com/milaforge/hello_agentic_world/edit/main/docs/{path}"

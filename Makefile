@@ -8,3 +8,6 @@ run:
 
 eval:
 	uv run python evals/run.py --verbose
+
+book:
+	mdbook serve docs 
