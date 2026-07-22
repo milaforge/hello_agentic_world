@@ -15,7 +15,7 @@
       <input id="rr-run-file" type="file" accept="application/json,.json" />
     </label>
   </section>
-  <section class="rr-run" aria-live="polite">
+  <section id="rr-run-panel" class="rr-run" aria-live="polite" hidden>
     <header class="rr-run-header">
       <div class="rr-outcome-icon" id="rr-outcome-icon" aria-hidden="true"></div>
       <div class="rr-run-heading">
@@ -31,7 +31,7 @@
     </dl>
     <div id="rr-insights" class="rr-insights" aria-label="Run insights"></div>
   </section>
-  <section class="rr-replay" aria-label="Step replay">
+  <section id="rr-replay-panel" class="rr-replay" aria-label="Step replay" hidden>
     <div class="rr-section-heading">
       <div><span class="rr-section-kicker">Execution</span><h3>Tool-call timeline</h3></div>
       <span id="rr-step-count" class="rr-step-count">0 / 0</span>

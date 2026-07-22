@@ -17,6 +17,7 @@
 }
 
 .rr *, .rr *::before, .rr *::after { box-sizing: border-box; }
+.rr [hidden] { display: none !important; }
 .rr-toolbar, .rr-run, .rr-replay { border: 1px solid var(--rr-border); border-radius: 16px; background: var(--rr-surface); }
 .rr svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 

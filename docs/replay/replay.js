@@ -19,10 +19,11 @@
 
   const state = { run: null, steps: [], index: 0, timer: null, raf: null, tickStartedAt: 0, playbackMs: 1500 };
   const elements = {
-    sampleSelect: document.getElementById("rr-sample-select"), runFile: document.getElementById("rr-run-file"), outcomeIcon: document.getElementById("rr-outcome-icon"), statusBadge: document.getElementById("rr-status-badge"), runId: document.getElementById("rr-run-id"), runTitle: document.getElementById("rr-run-title"), runSummary: document.getElementById("rr-run-summary"), scenario: document.getElementById("rr-scenario"), model: document.getElementById("rr-model"), callCount: document.getElementById("rr-call-count"), insights: document.getElementById("rr-insights"), stepCount: document.getElementById("rr-step-count"), stepper: document.getElementById("rr-stepper"), stepCard: document.getElementById("rr-step-card"), toolIcon: document.getElementById("rr-tool-icon"), stepLabel: document.getElementById("rr-step-label"), stepTitle: document.getElementById("rr-step-title"), stepTarget: document.getElementById("rr-step-target"), stepStatus: document.getElementById("rr-step-status"), stepBody: document.getElementById("rr-step-body"), openDetails: document.getElementById("rr-open-details"), modal: document.getElementById("rr-modal"), modalTitle: document.getElementById("rr-modal-title"), modalSubtitle: document.getElementById("rr-modal-subtitle"), modalExtra: document.getElementById("rr-modal-extra"), closeModal: document.getElementById("rr-close-modal"), backButton: document.getElementById("rr-back"), playButton: document.getElementById("rr-play"), playLabel: document.getElementById("rr-play-label"), playProgressValue: document.getElementById("rr-play-progress-value"), nextButton: document.getElementById("rr-next"), stepJson: document.getElementById("rr-step-json"), copyJson: document.getElementById("rr-copy-json"), announcer: document.getElementById("rr-announcer")
+    sampleSelect: document.getElementById("rr-sample-select"), runFile: document.getElementById("rr-run-file"), runPanel: document.getElementById("rr-run-panel"), replayPanel: document.getElementById("rr-replay-panel"), outcomeIcon: document.getElementById("rr-outcome-icon"), statusBadge: document.getElementById("rr-status-badge"), runId: document.getElementById("rr-run-id"), runTitle: document.getElementById("rr-run-title"), runSummary: document.getElementById("rr-run-summary"), scenario: document.getElementById("rr-scenario"), model: document.getElementById("rr-model"), callCount: document.getElementById("rr-call-count"), insights: document.getElementById("rr-insights"), stepCount: document.getElementById("rr-step-count"), stepper: document.getElementById("rr-stepper"), stepCard: document.getElementById("rr-step-card"), toolIcon: document.getElementById("rr-tool-icon"), stepLabel: document.getElementById("rr-step-label"), stepTitle: document.getElementById("rr-step-title"), stepTarget: document.getElementById("rr-step-target"), stepStatus: document.getElementById("rr-step-status"), stepBody: document.getElementById("rr-step-body"), openDetails: document.getElementById("rr-open-details"), modal: document.getElementById("rr-modal"), modalTitle: document.getElementById("rr-modal-title"), modalSubtitle: document.getElementById("rr-modal-subtitle"), modalExtra: document.getElementById("rr-modal-extra"), closeModal: document.getElementById("rr-close-modal"), backButton: document.getElementById("rr-back"), playButton: document.getElementById("rr-play"), playLabel: document.getElementById("rr-play-label"), playProgressValue: document.getElementById("rr-play-progress-value"), nextButton: document.getElementById("rr-next"), stepJson: document.getElementById("rr-step-json"), copyJson: document.getElementById("rr-copy-json"), announcer: document.getElementById("rr-announcer")
   };
 
   /* Formatting helpers */
+  function setPanelsVisible({ run, replay }) { elements.runPanel.hidden = !run; elements.replayPanel.hidden = !replay; }
   function escapeHtml(value) { return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;"); }
   function escapeCode(value) { return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"); }
   function asText(value, fallback = "—") { if (value === null || value === undefined || value === "") return fallback; return typeof value === "string" ? value : JSON.stringify(value); }
@@ -283,6 +284,7 @@
     if (!run || typeof run !== "object" || Array.isArray(run)) throw new TypeError("The JSON root must be an object.");
     stop();
     if (elements.modal.open) elements.modal.close();
+    setPanelsVisible({ run: true, replay: true });
     state.run = run;
     state.steps = groupObservations(run.observations);
     state.index = 0;
@@ -308,6 +310,7 @@
   function showMessage(title, summary) {
     stop();
     root.dataset.state = "error";
+    setPanelsVisible({ run: true, replay: false });
     elements.outcomeIcon.innerHTML = ICONS.x;
     elements.statusBadge.className = "rr-status-badge rr-failure";
     elements.statusBadge.textContent = "Load error";
