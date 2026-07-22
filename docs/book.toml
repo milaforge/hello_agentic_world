@@ -6,5 +6,7 @@ multilingual = false
 src = "src"
 
 [output.html]
+additional-css = ["replay/replay.css"]
+additional-js = ["replay/replay.js"]
 git-repository-url = "https://github.com/milaforge/hello_agentic_world"
 edit-url-template = "https://github.com/milaforge/hello_agentic_world/edit/main/docs/{path}"
