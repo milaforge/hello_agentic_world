@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "runs": [
+    {
+      "title": "Completed: empty workspace",
+      "file": "completed_20260717T074947.873651Z.json"
+    },
+    {
+      "title": "Completed: 1 Python file",
+      "file": "completed_20260717T075556.138766Z.json"
+    },
+    {
+      "title": "Completed: 2 Python files",
+      "file": "completed_20260717T074219.430456Z.json"
+    },
+    {
+      "title": "Failed: step budget exhausted",
+      "file": "failed_20260718T031629.415482Z.json"
+    },
+    {
+      "title": "Failed: duplicate action",
+      "file": "failed_20260718T044629.270973Z.json"
+    }
+  ]
+}

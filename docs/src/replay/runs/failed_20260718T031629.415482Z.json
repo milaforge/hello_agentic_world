@@ -1,0 +1,207 @@
+{
+  "created_at": "2026-07-18T03:16:29.415482+00:00",
+  "error": "step_budget_exhausted",
+  "final_result": null,
+  "model": "qwen2.5-coder:1.5b",
+  "observations": [
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-1",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 1
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-2",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 2
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-3",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 3
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-4",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 4
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-5",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 5
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-6",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 6
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-7",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 7
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-8",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 8
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-9",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 9
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-10",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 10
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-11",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 11
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-12",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 12
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-13",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 13
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-14",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 14
+    },
+    {
+      "call": {
+        "arguments": {},
+        "name": "invalid_model_response"
+      },
+      "id": "obs-15",
+      "result": {
+        "error": "unknown_tool",
+        "ok": false,
+        "value": null
+      },
+      "step": 15
+    }
+  ],
+  "request": "basic",
+  "run_id": "20260718T031629.415482Z",
+  "schema_version": 1,
+  "status": "failed"
+}

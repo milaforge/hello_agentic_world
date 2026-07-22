@@ -2,6 +2,7 @@
 
 - [Introduction](introduction.md)
 - [Repository History](repository-history.md)
+- [Run Replay](replay.md)
 - [Stage 1: Hello Agent](stage-1/overview.md)
   - [Framing the Lesson](stage-1/framing.md)
   - [CLI Foundation](stage-1/cli-foundation.md)

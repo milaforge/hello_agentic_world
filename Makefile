@@ -10,4 +10,4 @@ eval:
 	uv run python evals/run.py --verbose
 
 book:
-	mdbook serve docs 
+	mdbook serve docs --hostname 127.0.0.1 --port 3000
